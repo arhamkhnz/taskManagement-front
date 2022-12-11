@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  Table,
   Layout,
-  Card,
   Button,
   Modal,
   Form,
@@ -10,98 +8,23 @@ import {
   Select,
   Spin,
   message,
-  Row,
 } from "antd";
+import { TableComponent } from "./Common/Table";
 import userService from "../services/userService";
 const { Content } = Layout;
 const { Option } = Select;
 
 export default function BodyComponent() {
   const [form] = Form.useForm();
+  const [dataChange, setDataChange] = useState(false);
+  const [taskLIst, setTaskList] = useState([]);
   const [showFormModel, setShowFormModel] = useState(false);
   const [isEditModal, setIsEditModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
-  const [editData, setEditData] = useState(null);
-  const [tableParams, setTableParams] = useState({
-    pagination: {
-      current: 1,
-      pageSize: 20,
-    },
-  });
 
   useEffect(() => {
     listTasks();
   }, []);
-
-  const listTasks = async () => {
-    setLoading(true);
-    const detail = await userService.listTasks();
-    console.log(detail);
-    setData(detail.data.data.reverse());
-    setTableParams({
-      ...tableParams,
-      pagination: {
-        ...tableParams.pagination,
-        total: detail.data.data.length,
-      },
-    });
-    setLoading(false);
-  };
-
-  const showEditModal = (id) => {
-    getTaskDetailById(id);
-    setIsEditModal(true);
-    setShowFormModel(true);
-  };
-
-  const getTaskDetailById = async (id) => {
-    const detail = await userService.getTaskDetailById(id);
-    console.log(detail);
-    const data = detail.data.data;
-    setEditData(data);
-    form.setFieldsValue({ name: data.name, status: data.status });
-  };
-
-  const columns = [
-    {
-      title: "Id",
-      dataIndex: "_id",
-      width: "8%",
-    },
-    {
-      title: "Name",
-      dataIndex: "name",
-      width: "12%",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      width: "15%",
-    },
-    {
-      title: "ParentId",
-      dataIndex: "parentId",
-      width: "15%",
-    },
-    {
-      title: "Action",
-      dataIndex: "_id",
-      width: "10%",
-      render: (record) => (
-        <>
-          <Row>
-            <Button style={{margin: '1px'}} type="primary" onClick={() => showEditModal(record)}>
-              {"Edit"}
-            </Button>
-            <Button style={{margin: '1px'}} type="primary" danger>
-              {"Delete"}
-            </Button>
-          </Row>
-        </>
-      ),
-    },
-  ];
 
   const onFinish = async (values) => {
     setLoading(true);
@@ -111,11 +34,20 @@ export default function BodyComponent() {
       message.success("Task Added Successfully");
       onClose();
       setLoading(false);
-      listTasks();
+      setDataChange(!false);
+      listTasks()
     } else {
       message.info("Error Occured Please Try Again");
       setLoading(false);
     }
+  };
+
+  const listTasks = async () => {
+    setLoading(true);
+    const detail = await userService.listTasks();
+    console.log(detail);
+    setTaskList(detail.data.data);
+    setLoading(false);
   };
 
   const layout = {
@@ -137,14 +69,6 @@ export default function BodyComponent() {
     setIsEditModal(false);
   };
 
-  const handleTableChange = (pagination, filters, sorter) => {
-    setTableParams({
-      pagination,
-      filters,
-      ...sorter,
-    });
-  };
-
   return (
     <>
       <div style={{ margin: "1%" }}>
@@ -158,16 +82,7 @@ export default function BodyComponent() {
               Add Task
             </Button>
           </div>
-          <Spin spinning={loading} tip="Please Wait">
-            <Card style={{ width: "auto" }}>
-              <Table
-                columns={columns}
-                dataSource={data}
-                pagination={tableParams.pagination}
-                onChange={handleTableChange}
-              />
-            </Card>
-          </Spin>
+          <TableComponent dataChange={dataChange} />
         </Content>
 
         <div>
@@ -195,22 +110,6 @@ export default function BodyComponent() {
                 >
                   <Input />
                 </Form.Item>
-                {isEditModal && (
-                  <Form.Item
-                    name="status"
-                    label="Status"
-                    rules={[
-                      {
-                        required: false,
-                      },
-                    ]}
-                  >
-                    <Select onChange={"onGenderChange"} allowClear>
-                      <Option value="In Progress">In Progress</Option>
-                      <Option value="Done">Done</Option>
-                    </Select>
-                  </Form.Item>
-                )}
                 <Form.Item
                   name="parentId"
                   label="Parent Task"
@@ -220,18 +119,15 @@ export default function BodyComponent() {
                     },
                   ]}
                 >
-                  <Select
-                    placeholder="Optional"
-                    onChange={"onGenderChange"}
-                    allowClear
-                  >
-                    <Option value="male">male</Option>
-                    <Option value="female">female</Option>
-                    <Option value="other">other</Option>
+                  <Select onChange={"onGenderChange"} allowClear>
+                    {taskLIst &&
+                      taskLIst.length > 0 &&
+                      taskLIst.map((el) => (
+                        <Option value={el._id}>{el.name}</Option>
+                      ))}
                   </Select>
                 </Form.Item>
                 <Form.Item>
-                  {!isEditModal && (
                     <Button
                       style={{ margin: "1px" }}
                       type="primary"
@@ -239,16 +135,6 @@ export default function BodyComponent() {
                     >
                       Add
                     </Button>
-                  )}
-                  {isEditModal && (
-                    <Button
-                      style={{ margin: "1px" }}
-                      type="primary"
-                      htmlType="submit"
-                    >
-                      Update
-                    </Button>
-                  )}
                   <Button
                     style={{ margin: "1px" }}
                     htmlType="button"

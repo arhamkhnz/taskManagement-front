@@ -21,6 +21,12 @@ class UserService {
   updateTask (id) {
     return ApiService.get(`${URL}task/id/${id}`);
   }
+
+  deleteTask (id) {
+    return ApiService.post(`${URL}task/delete`, {
+      id: id
+    });
+  }
 }
 
 export default new UserService();

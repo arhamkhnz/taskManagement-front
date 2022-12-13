@@ -19,7 +19,6 @@ export default function BodyComponent() {
   const [dataChange, setDataChange] = useState(false);
   const [taskLIst, setTaskList] = useState([]);
   const [showFormModel, setShowFormModel] = useState(false);
-  const [isEditModal, setIsEditModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -66,12 +65,11 @@ export default function BodyComponent() {
   const onClose = () => {
     form.resetFields();
     setShowFormModel(false);
-    setIsEditModal(false);
   };
 
   return (
     <>
-      <div style={{ margin: "1%" }}>
+      <div style={{ margin: "1%"}}>
         <Content>
           <div className="d-flex Justify-content-end">
             <Button
@@ -87,7 +85,7 @@ export default function BodyComponent() {
 
         <div>
           <Modal
-            title={isEditModal ? "Edit Task" : "Add Task"}
+            title={"Add Task"}
             open={showFormModel}
             footer={null}
             closable={false}
@@ -119,7 +117,7 @@ export default function BodyComponent() {
                     },
                   ]}
                 >
-                  <Select onChange={"onGenderChange"} allowClear>
+                  <Select>
                     {taskLIst &&
                       taskLIst.length > 0 &&
                       taskLIst.map((el) => (

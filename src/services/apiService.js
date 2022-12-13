@@ -17,7 +17,7 @@ class ApiService {
           ) {
             message.info(err.response.data.message);
           } else {
-            alert("Error in PUT API");
+            alert("Error in GET API");
           }
         }
       );
@@ -39,42 +39,10 @@ class ApiService {
           ) {
             message.info(err.response.data.message);
           } else {
-            alert("Error in PUT API");
+            alert("Error in POST API");
           }
         }
       );
-    });
-  }
-
-  async put(url, data) {
-    const token = localStorage.getItem("token");
-    axios.defaults.headers.common["Authorization"] = JSON.stringify(token);
-    return new Promise(async function (resolve, reject) {
-      await axios({
-        method: "put",
-        url: url,
-        data,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      })
-        .then((result) => {
-          resolve(result);
-        })
-        .catch((err) => {
-          console.log(err);
-          if (
-            err &&
-            err.response &&
-            err.response.data &&
-            err.response.data.message
-          ) {
-            message.warn(err.response.data.message);
-          } else {
-            alert("Error in PUT API");
-          }
-        });
     });
   }
 }

@@ -33,12 +33,12 @@ export default function BodyComponent() {
       message.success("Task Added Successfully");
       onClose();
       setLoading(false);
-      setDataChange(!false);
       listTasks()
     } else {
       message.info("Error Occured Please Try Again");
       setLoading(false);
     }
+    setDataChange(true);
   };
 
   const listTasks = async () => {
@@ -46,6 +46,7 @@ export default function BodyComponent() {
     const detail = await userService.listTasks();
     console.log(detail);
     setTaskList(detail.data.data);
+    setDataChange(false)
     setLoading(false);
   };
 

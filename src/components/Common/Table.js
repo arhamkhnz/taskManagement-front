@@ -24,7 +24,6 @@ export const TableComponent = (props) => {
   const [childTaskList, setChildTaskList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
-  const [parentTaskId, setParentTaskId] = useState(null);
   const [currentTask, setCurrentTask] = useState(null);
   const [tableParams, setTableParams] = useState({
     pagination: {
@@ -105,7 +104,6 @@ export const TableComponent = (props) => {
   const onClose = () => {
     form.resetFields();
     setCurrentTask(null);
-    setParentTaskId(null);
     setShowEditForm(false);
   };
 
@@ -118,7 +116,6 @@ export const TableComponent = (props) => {
   const onFinish = async (values) => {
     setLoading(true);
     console.log(values);
-    values.parentId = parentTaskId;
     const update = await userService.updateTask(currentTask, values);
     console.log(update);
     if (update.data.success === true) {
@@ -129,7 +126,9 @@ export const TableComponent = (props) => {
     } else {
       message.info("Error Occured Please Try Again");
       setLoading(false);
+      onClose();
     }
+    listTasks()
   };
 
   const markComplete = async (id, status) => {
@@ -193,7 +192,7 @@ export const TableComponent = (props) => {
             >
               {"Mark as Complete"}
             </Button>
-            <Button
+            {/* <Button
               size="small"
               onClick={() => confirmModal(record)}
               style={{ margin: "1px" }}
@@ -201,7 +200,7 @@ export const TableComponent = (props) => {
               danger
             >
               {"Delete"}
-            </Button>
+            </Button> */}
           </Row>
         </>
       ),

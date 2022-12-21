@@ -1,4 +1,5 @@
 # Task Management (Frontend)
+Kindly consider leaving a :star: if you like the repository.
 
 #### [Live Preview](https://task-management-front.vercel.app/)
 
